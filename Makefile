@@ -32,13 +32,13 @@ Install one (e.g., i686-linux-gnu-gcc or i386-unknown-elf-gcc) \
 or run: make PREFIX=<triplet->)
 endif
 
-BOOTIMG := /usr/local/grub/lib/grub/i386-pc/boot.img
-GRUBLOC := /usr/local/grub/bin/
+BOOTIMG := /usr/local/grub-i386/lib/grub/i386-pc/boot.img
+GRUBLOC := /usr/local/grub-i386/bin/
 
 else
 PREFIX  ?=
-BOOTIMG := /usr/lib/grub/i386-pc/boot.img
-GRUBLOC :=
+BOOTIMG := /usr/local/grub-i386/lib/grub/i386-pc/boot.img
+GRUBLOC := /usr/bin/
 endif
 
 
@@ -59,6 +59,7 @@ OBJS = \
 	kernel_main.o \
 	interrupt.o \
 	page.o \
+	graphics.o \
 
 # Make sure to keep a blank line here after OBJS list
 

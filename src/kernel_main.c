@@ -27,6 +27,7 @@
 #include <stddef.h>
 #include "page.h"
 #include "interrupt.h"
+#include "graphics.h"
 
 extern int _end_kernel;
 
@@ -311,18 +312,21 @@ void main() {
     video_buf.physical_addr = (void *)0xB8000;
     map_pages((void *)0xB8000, &video_buf, pd);
 
-    loadPageDirectory(pd);
-    asm("mov %cr0, %eax\n"
-        "or $0x80000001,%eax\n"
-        "mov %eax,%cr0");
+   // loadPageDirectory(pd);
+   // asm("mov %cr0, %eax\n"
+     //   "or $0x80000001,%eax\n"
+       // "mov %eax,%cr0");
 
 
     // White out the screen
-    for(int x = 0; x < getFramebufferWidth(); x++) {
-        for(int y = 0; y < getFramebufferHeight(); y++) {
-            drawPixel(x, y, 0xffffff);
-        }
-    }
+   // for(int x = 0; x < getFramebufferWidth(); x++) {
+       // for(int y = 0; y < getFramebufferHeight(); y++) {
+           // drawPixel(x, y, 0xffffff);
+       // }
+   //}
+
+    clearScreen(0xff0000);
+    drawRect(462, 680, 100, 80, 0xffffff);
 
     while(1) {
 

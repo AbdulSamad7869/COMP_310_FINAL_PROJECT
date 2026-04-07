@@ -24,6 +24,10 @@
 
 
 #include <stdint.h>
+#include "page.h"
+#include "interrupt.h"
+
+extern int _end_kernel;
 
 #define INFO_TYPE_KERNEL_LOAD_ADDR 0x15
 #define INFO_TYPE_CMD_LINE 1
@@ -221,6 +225,51 @@ void drawPixel(int x, int y, int color) {
     framebuffer[x+(y*framebufferWidth)] = (uint32_t)color;
 }
 
+struct page_directory_entry pd[1024] __attribute__((aligned(4096)));
+struct page pt[1024] __attribute__((aligned(4096)));
+
+void *map_pages(void *vaddr, struct ppage *pglist, struct page_directory_entry *pd) {
+	// since vaddr is a pointer, we can't do the shifting
+      	// so we just set it to an unsigned int and return it later as a void*
+      	// as long as the linked list isn't empty, get bits 31-22 aka shift by 22
+       	// get bits 21-12 and then mask it with 0x3FF
+      	uintptr_t addr = (uintptr_t) vaddr;
+       	while (pglist != NULL) {
+       		uint32_t dir_index = addr >> 22;
+              	uint32_t pt_index = (addr >> 12) & 0x3FF;
+               	// set equal to 1 so cpu knows it's a valid page
+              	pd[dir_index].present = 1;
+              	// set equal to 1 so we can read/write to it
+             	pd[dir_index].rw = 1;
+             	// point the page directory entry to our page table
+              	// you shift right by 12 because we only need bits 31-12
+              	pd[dir_index].frame = (uintptr_t) pt >> 12;
+
+             	// set equal to 1 so cpu knows it's a valid page
+             	pt[pt_index].present = 1;
+              	// set equal to 1 so we can read/write to it
+             	pt[pt_index].rw = 1;
+             	// point the page table entry to the actual physical page
+              	// shift by 12 since we only need bits 31-12
+              	pt[pt_index].frame = (uintptr_t) pglist -> physical_addr >> 12;
+
+              	// move to the next page which is 0x1000 ahead 
+               	addr += 0x1000;
+              	// go to the next page in the list
+               	pglist = pglist -> next;
+      	}
+   	return vaddr;
+}
+
+// function given to us to load the page directory
+void loadPageDirectory(struct page_directory_entry *pd) {
+    asm("mov %0,%%cr3"
+        :
+        : "r"(pd)
+        :);
+}
+
+
 void main() {
 
     // Bottom must be kept as first line of main() function. Don't put anything
@@ -236,6 +285,37 @@ void main() {
     // of the framebuffer and the size of the screen.
     parseMultiboot2Info();
 
+    remap_pic();
+    load_gdt();
+    init_idt();
+    asm volatile("sti");
+
+    init_pfa_list();
+
+    for (uintptr_t i = 0x100000; i < (uintptr_t)&_end_kernel; i += 0x1000) {
+    	struct ppage tmp;
+    	tmp.next = NULL;
+    	tmp.physical_addr = (void *)i;
+    	map_pages((void *)i, &tmp, pd);
+    }
+    uint32_t esp;
+    asm("mov %%esp,%0" : "=r" (esp));
+    struct ppage temp;
+    temp.next = NULL;
+    temp.physical_addr = (void *)esp;
+    map_pages((void *)esp, &temp, pd);
+
+    struct ppage video_buf;
+    video_buf.next = NULL;
+    video_buf.physical_addr = (void *)0xB8000;
+    map_pages((void *)0xB8000, &video_buf, pd);
+
+    loadPageDirectory(pd);
+    asm("mov %cr0, %eax\n"
+        "or $0x80000001,%eax\n"
+        "mov %eax,%cr0");
+
+
     // White out the screen
     for(int x = 0; x < getFramebufferWidth(); x++) {
         for(int y = 0; y < getFramebufferHeight(); y++) {
@@ -245,10 +325,6 @@ void main() {
 
     while(1) {
 
-        uint8_t status = inb(0x64);
-
-        if(status & 1) {
-            uint8_t scancode = inb(0x60);
-        }
+        asm volatile("hlt");
     }
 }

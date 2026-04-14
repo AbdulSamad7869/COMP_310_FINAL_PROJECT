@@ -60,6 +60,7 @@ OBJS = \
 	interrupt.o \
 	page.o \
 	graphics.o \
+	game.o \
 
 # Make sure to keep a blank line here after OBJS list
 

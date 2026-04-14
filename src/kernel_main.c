@@ -30,6 +30,7 @@
 #include "graphics.h"
 
 extern int _end_kernel;
+extern void game_loop();
 
 #define INFO_TYPE_KERNEL_LOAD_ADDR 0x15
 #define INFO_TYPE_CMD_LINE 1
@@ -325,11 +326,13 @@ void main() {
        // }
    //}
 
-    clearScreen(0xff0000);
-    drawRect(462, 680, 100, 80, 0xffffff);
+     clearScreen(0xff0000);
 
-    while(1) {
+     // start the game
+     game_loop();
 
+     // fallback (never reached, but safe)
+     while(1) {
         asm volatile("hlt");
-    }
+     }
 }

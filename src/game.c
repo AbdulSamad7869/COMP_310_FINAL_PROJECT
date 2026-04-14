@@ -1,20 +1,8 @@
 #include "graphics.h"
 #include "kernel_main.h"
 #include <stdint.h>
-
-// TEMP input handling (until input.h is ready)
-extern int key_state[256];
-
-// You may need to adjust these based on your interrupt.c
-#define KEY_LEFT  0x4B   // common scancode for left arrow
-#define KEY_RIGHT 0x4D   // common scancode for right arrow
-
-typedef struct {
-	int x;
-    	int y;
-    	int width;
-   	int height;
-} Player;
+#include "input.h"
+#include "game.h"
 
 // simple delay to slow down the game
 void delay() {

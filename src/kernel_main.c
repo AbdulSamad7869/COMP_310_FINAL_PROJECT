@@ -86,8 +86,8 @@ struct multiboot_tag {
 struct multiboot_header mbh  __attribute__((section(".multiboot1")))= {
     .magic = MULTIBOOT2_HEADER_MAGIC,
     .flags = 0, // Tell GRUB we are adding info about video info
-    .length = 16, +sizeof(struct multiboot_framebuffer_tag) + sizeof(struct multiboot_tag),
-    .checksum = -(MULTIBOOT2_HEADER_MAGIC) + 0 + 16 + sizeof(struct multiboot_framebuffer_tag) + sizeof(struct multiboot_tag)
+    .length = 16,
+    .checksum = -(16+MULTIBOOT2_HEADER_MAGIC)
 };
 struct multiboot_framebuffer_tag  gfxtag __attribute__((section(".multiboot2")))= {
     .type = MULTIBOOT2_HEADER_VIDINFO_TAG,

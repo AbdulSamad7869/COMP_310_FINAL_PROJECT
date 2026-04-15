@@ -23,17 +23,6 @@
 #define BULLET_SPEED     8
 
 /*
- * Player structure:
- * Stores position and size of the player rectangle
- */
-typedef struct {
-    int x;
-    int y;
-    int width;
-    int height;
-} Player;
-
-/*
  * Enemy structure:
  * Stores position, size, and alive state of each enemy
  */

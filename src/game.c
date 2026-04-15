@@ -6,7 +6,7 @@
 
 // simple delay to slow down the game
 void delay() {
-	for (volatile int i = 0; i < 10000000; i++);
+	for (volatile int i = 0; i < 1000000; i++);
 }
 
 void game_loop() {
@@ -38,11 +38,11 @@ void game_loop() {
             		player.x = getFramebufferWidth() - player.width;
         	}
 
+		// DELAY
+                delay();
+
 	        // RENDER
         	clearScreen(0xff0000); // red background
         	drawRect(player.x, player.y, player.width, player.height, 0xffffff);
-
-	        // DELAY
-        	delay();
     	}
 }

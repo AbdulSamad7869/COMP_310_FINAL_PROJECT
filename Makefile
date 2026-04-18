@@ -37,7 +37,10 @@ GRUBLOC := /usr/local/grub-i386/bin/
 
 else
 PREFIX  ?=
-BOOTIMG := /usr/local/grub-i386/lib/grub/i386-pc/boot.img
+# Pick the first boot.img that actually exists on this system.
+BOOTIMG := $(firstword $(wildcard \
+  /usr/local/grub-i386/lib/grub/i386-pc/boot.img \
+  /usr/lib/grub/i386-pc/boot.img))
 GRUBLOC := /usr/bin/
 endif
 
@@ -95,8 +98,8 @@ rootfs.img:
 	@echo " -- BUILD COMPLETED SUCCESSFULLY --"
 
 
-run:
-	qemu-system-i386 -hda rootfs.img
+run: all
+	env -i HOME="$$HOME" PATH=/usr/bin:/bin DISPLAY="$$DISPLAY" XAUTHORITY="$$XAUTHORITY" WAYLAND_DISPLAY="$$WAYLAND_DISPLAY" XDG_RUNTIME_DIR="$$XDG_RUNTIME_DIR" qemu-system-i386 -hda rootfs.img
 
 debug:
 	./launch_qemu.sh

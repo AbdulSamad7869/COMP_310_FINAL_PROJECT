@@ -1,6 +1,11 @@
 #ifndef GAME_H
 #define GAME_H
 #include <stdint.h>
+
+// screen dimensions (must match the framebuffer requested in kernel_main.c)
+#define SCREEN_WIDTH  1024
+#define SCREEN_HEIGHT 768
+
 /*
 * Player structure:
 * Stores position and size of the player rectangle

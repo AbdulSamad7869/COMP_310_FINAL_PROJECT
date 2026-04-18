@@ -32,12 +32,12 @@ Install one (e.g., i686-linux-gnu-gcc or i386-unknown-elf-gcc) \
 or run: make PREFIX=<triplet->)
 endif
 
-BOOTIMG := /usr/local/grub-i386/lib/grub/i386-pc/boot.img
+BOOTIMG := /usr/lib/grub/i386-pc/boot.img 
 GRUBLOC := /usr/local/grub-i386/bin/
 
 else
 PREFIX  ?=
-BOOTIMG := /usr/local/grub-i386/lib/grub/i386-pc/boot.img
+BOOTIMG := /usr/lib/grub/i386-pc/boot.img 
 GRUBLOC := /usr/bin/
 endif
 
@@ -83,19 +83,20 @@ obj:
 
 rootfs.img:
 	dd if=/dev/zero of=rootfs.img bs=1M count=32
-	$(GRUBLOC)grub-mkimage -p "(hd0,msdos1)/boot" -o grub.img -O i386-pc normal biosdisk multiboot multiboot2 configfile fat exfat part_msdos
-	dd if=$(BOOTIMG) of=rootfs.img conv=notrunc
-	dd if=grub.img of=rootfs.img conv=notrunc bs=512 seek=1 #########
 	echo 'start=2048, type=83, bootable' | sfdisk rootfs.img
 	mkfs.vfat --offset 2048 -F16 rootfs.img
+	$(GRUBLOC)grub-mkimage -p "(hd0,msdos1)/boot" -o grub.img -O i386-pc normal biosdisk multiboot multiboot2 configfile fat exfat part_msdos
+	dd if=$(BOOTIMG) of=rootfs.img conv=notrunc
+	dd if=/usr/lib/grub/i386-pc/boot.img of=rootfs.img conv=notrunc bs=512 seek=1 #########
 	mcopy -i rootfs.img@@1M kernel ::/
 	mmd -i rootfs.img@@1M boot 
 	mcopy -i rootfs.img@@1M grub.cfg ::/boot
 	@echo " -- BUILD COMPLETED SUCCESSFULLY --"
-
+run: all
+	env -i HOME="$$HOME" PATH=/usr/bin:/bin DISPLAY="$$DISPLAY" XAUTHORITY="$$XAUTHORITY" WAYLAND_DISPLAY="$$WAYLAND_DISPLAY" XDG_RUNTIME_DIR="$$XDG_RUNTIME_DIR" qemu-system-i386 -drive format=raw,file=rootfs.img
 
 run:
-	qemu-system-i386 -hda rootfs.img
+	qemu-system-i386 -drive format=raw,file=rootfs.img
 
 debug:
 	./launch_qemu.sh

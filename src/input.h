@@ -1,0 +1,28 @@
+#ifndef INPUT_H
+#define INPUT_H
+
+#include <stdint.h>
+
+/*
+ * Each index represents a key (scancode)
+ * Value = 1 → key is pressed
+ * Value = 0 → key is not pressed
+ * This is updated inside interrupt.c
+ */
+extern uint8_t key_state[256];
+
+/*
+ * Returns 1 if key is pressed, 0 otherwise
+ * Used by game.c to check input
+ */
+int is_key_pressed(uint8_t scancode);
+
+/*
+ * Keyboard scancodes (from your interrupt homework)
+ * These represent left and right arrow keys
+ */
+#define KEY_LEFT  0x4B
+#define KEY_RIGHT 0x4D
+#define KEY_SPACE 0x39
+
+#endif

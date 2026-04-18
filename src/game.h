@@ -58,6 +58,17 @@ typedef struct {
     int dy;      // direction: negative = moving up (player bullet)
 } Bullet;
 
+/*
+* Player structure:
+* Stores position and size of the player rectangle
+*/
+typedef struct {
+	int x; // horizontal position
+	int y; // vertical position
+	int width; // width of player
+	int height; // height of player
+} Player;
+
 // delay to slow down the game loop
 void delay();
 

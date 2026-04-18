@@ -38,6 +38,10 @@ GRUBLOC := /usr/local/grub-i386/bin/
 else
 PREFIX  ?=
 BOOTIMG := /usr/lib/grub/i386-pc/boot.img 
+# Pick the first boot.img that actually exists on this system.
+BOOTIMG := $(firstword $(wildcard \
+  /usr/local/grub-i386/lib/grub/i386-pc/boot.img \
+  /usr/lib/grub/i386-pc/boot.img))
 GRUBLOC := /usr/bin/
 endif
 
@@ -60,6 +64,7 @@ OBJS = \
 	interrupt.o \
 	page.o \
 	graphics.o \
+	game.o \
 
 # Make sure to keep a blank line here after OBJS list
 
@@ -95,8 +100,13 @@ rootfs.img:
 run: all
 	env -i HOME="$$HOME" PATH=/usr/bin:/bin DISPLAY="$$DISPLAY" XAUTHORITY="$$XAUTHORITY" WAYLAND_DISPLAY="$$WAYLAND_DISPLAY" XDG_RUNTIME_DIR="$$XDG_RUNTIME_DIR" qemu-system-i386 -drive format=raw,file=rootfs.img
 
+<<<<<<< HEAD
 run:
 	qemu-system-i386 -drive format=raw,file=rootfs.img
+=======
+run: all
+	env -i HOME="$$HOME" PATH=/usr/bin:/bin DISPLAY="$$DISPLAY" XAUTHORITY="$$XAUTHORITY" WAYLAND_DISPLAY="$$WAYLAND_DISPLAY" XDG_RUNTIME_DIR="$$XDG_RUNTIME_DIR" qemu-system-i386 -hda rootfs.img
+>>>>>>> 384aa4408ee7b783e1f36673431e626a8415920f
 
 debug:
 	./launch_qemu.sh

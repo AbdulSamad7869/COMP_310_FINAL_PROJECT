@@ -1,5 +1,0 @@
-Test to see if this works or not.
-
-Another test to see if this is working Hopefully this works.
-
-This is a final confirmation to see if I can push to github via the vm.

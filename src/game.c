@@ -104,7 +104,33 @@ void game_loop() {
                 }
 
 
+		// BULLET - ENEMY COLLISION DETECTION
+		for (int i = 0; i < MAX_BULLETS; i++) {
+
+			if (!bullets[i].active) continue;
+
+			for (int row = 0; row < ENEMY_ROWS; row++) {
+				for (int col = 0; col < ENEMY_COLS; col++) {
+
+					if (!enemies[row][col].alive) continue;
+
+					// AABB overlap check
+					if (bullets[i].x < enemies[row][col].x + enemies[row][col].width &&
+					    bullets[i].x + bullets[i].width > enemies[row][col].x &&
+					    bullets[i].y < enemies[row][col].y + enemies[row][col].height &&
+					    bullets[i].y + bullets[i].height > enemies[row][col].y) {
+
+						enemies[row][col].alive = 0;
+						bullets[i].active = 0;
+						break; // bullet is gone, stop checking enemies
+					}
+				}
+			}
+		}
+
 		// Add edge detection
+		// Only flag moveDown if an alive enemy is being pushed INTO the edge.
+		// This prevents the enemies from marching straight down after reversing.
 		int moveDown = 0;
 
 		for (int row = 0; row < ENEMY_ROWS; row++) {
@@ -112,9 +138,13 @@ void game_loop() {
 
         			if (!enemies[row][col].alive) continue;
 
-        			if (enemies[row][col].x <= 0 ||
-    				   enemies[row][col].x + enemies[row][col].width >= SCREEN_WIDTH) {
+        			if (enemyDirection > 0 &&
+				    enemies[row][col].x + enemies[row][col].width >= SCREEN_WIDTH) {
+            				moveDown = 1;
+        			}
 
+        			if (enemyDirection < 0 &&
+				    enemies[row][col].x <= 0) {
             				moveDown = 1;
         			}
     			}

@@ -6,7 +6,7 @@
 
 // simple delay to slow down the game
 void delay() {
-	for (volatile int i = 0; i < 1000000; i++);
+	for (volatile int i = 0; i < 300000; i++); // changed from 1000000 to 300000
 }
 
 void game_loop() {
@@ -50,11 +50,11 @@ void game_loop() {
 
         	// INPUT (movement)
         	if (key_state[KEY_LEFT]) {
-            		player.x -= 5;
+            		player.x -= 30; // changed this from 5 to 30 for speed
         	}
 
         	if (key_state[KEY_RIGHT]) {
-            		player.x += 5;
+            		player.x += 30; // changed this from 5 to 30 for speed
         	}
 
         	// BOUNDARY CHECK
@@ -159,7 +159,7 @@ void game_loop() {
         			if (moveDown) {
             				enemies[row][col].y += 20;
         			} else {
-            				enemies[row][col].x += enemyDirection * 1; // smoother
+            				enemies[row][col].x += enemyDirection * 10; // smoother. changed this from 1 to 10 to see if it's faster
         			}
     			}
 		}

@@ -169,7 +169,7 @@ void game_loop() {
 		}
 
 	        // RENDER
-        	clearScreen(0xff0000); // red background
+        	clearScreen(0x000000); // I want to see with black instead of red
         	drawRect(player.x, player.y, player.width, player.height, 0xffffff);
 
 		// Draw enemies

@@ -36,6 +36,16 @@ void game_loop() {
 
 	int enemyDirection = 1; // 1 = right, -1 = left
 
+	// Add bullets array
+	Bullet bullets[MAX_BULLETS];
+
+	// Initializing bullets
+	for (int i = 0; i < MAX_BULLETS; i++) {
+    		bullets[i].active = 0;
+	}
+
+	int shootCoolDown = 0;
+
     	while (1) {
 
         	// INPUT (movement)
@@ -56,7 +66,45 @@ void game_loop() {
             		player.x = getFramebufferWidth() - player.width;
         	}
 
-		// Add edge dectection
+		// Bullet Firing logic
+                if (key_state[KEY_SPACE] && shootCoolDown == 0) {
+
+                        for (int i = 0; i < MAX_BULLETS; i++) {
+
+                                if (!bullets[i].active) {
+
+                                        bullets[i].active = 1;
+
+                                        bullets[i].x = player.x + player.width / 2 - BULLET_WIDTH / 2;
+                                        bullets[i].y = player.y - BULLET_HEIGHT;
+
+                                        bullets[i].width = BULLET_WIDTH;
+                                        bullets[i].height = BULLET_HEIGHT;
+
+                                        bullets[i].dy = -BULLET_SPEED; // upward
+
+                                        shootCoolDown = 10; // delay between shoots
+                                        break; // only fire one bullet
+				}
+			}
+		}
+
+
+		 // MOVE BULLETS
+                for (int i = 0; i < MAX_BULLETS; i++) {
+
+                        if (bullets[i].active) {
+                                bullets[i].y += bullets[i].dy;
+
+                                // deactivate if off screen
+                                if (bullets[i].y < 0) {
+                                        bullets[i].active = 0;
+                                }
+                        }
+                }
+
+
+		// Add edge detection
 		int moveDown = 0;
 
 		for (int row = 0; row < ENEMY_ROWS; row++) {
@@ -110,7 +158,27 @@ void game_loop() {
     			}
 		}
 
+		// DRAW BULLETS
+		for (int i = 0; i < MAX_BULLETS; i++) {
+
+    			if (bullets[i].active) {
+        			drawRect(
+            				bullets[i].x,
+            				bullets[i].y,
+            				bullets[i].width,
+            				bullets[i].height,
+            				0xffffff // white bullet
+        			);
+    			}
+		}
+
+		if (shootCoolDown > 0) {
+                	shootCoolDown--;
+        	}
+
+
 		// DELAY
                 delay();
     	}
+
 }

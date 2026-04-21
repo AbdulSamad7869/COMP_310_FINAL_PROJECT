@@ -66,6 +66,14 @@ void game_loop() {
             		player.x = getFramebufferWidth() - player.width;
         	}
 
+		// once the letter q, is pressed, the game would end. (clear screen)
+		if (key_state[KEY_Q]) {
+			clearScreen(0x000000);
+			while(1) {
+				asm volatile("hlt");
+			}
+		}
+
 		// Bullet Firing logic
                 if (key_state[KEY_SPACE] && shootCoolDown == 0) {
 

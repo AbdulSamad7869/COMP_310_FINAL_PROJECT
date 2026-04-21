@@ -17,5 +17,6 @@ extern uint8_t key_state[256];
 #define KEY_LEFT 0x4B
 #define KEY_RIGHT 0x4D
 #define KEY_SPACE 0x39
+#define KEY_Q 0x10
 
 #endif

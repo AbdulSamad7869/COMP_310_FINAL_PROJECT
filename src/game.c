@@ -184,17 +184,17 @@ void game_loop() {
 		// Only flag moveDown if an alive enemy is being pushed INTO the edge.
 		// This prevents the enemies from marching straight down after reversing.
 		int moveDown = 0;
-
+		// loop through every enemy grid 
 		for (int row = 0; row < ENEMY_ROWS; row++) {
     			for (int col = 0; col < ENEMY_COLS; col++) {
-
+				// if the  enemy is dead, just skip it
         			if (!enemies[row][col].alive) continue;
-
+				// if the enemy's right edge has reached the screen's right edge, move down
         			if (enemyDirection > 0 &&
 				    enemies[row][col].x + enemies[row][col].width >= SCREEN_WIDTH) {
             				moveDown = 1;
         			}
-
+				// same concept as above but for left edge
         			if (enemyDirection < 0 &&
 				    enemies[row][col].x <= 0) {
             				moveDown = 1;
@@ -203,60 +203,69 @@ void game_loop() {
 		}
 
 		// Move enemies
+		// loop through every enemy in the grid and move them
 		for (int row = 0; row < ENEMY_ROWS; row++) {
     			for (int col = 0; col < ENEMY_COLS; col++) {
-
+				// if the enemyis dead, skip it
         			if (!enemies[row][col].alive) continue;
-
+				// if an enemy has reached the edge of the screen, move it down 20 pixels
         			if (moveDown) {
             				enemies[row][col].y += 20;
+				// did not hit the edge so move it in the current direction
+				// multiplication is for speed
         			} else {
             				enemies[row][col].x += enemyDirection * 10; // smoother. changed this from 1 to 10 to see if it's faster
         			}
     			}
 		}
-
+		// if an enemy has hit the edge, go the other direction (just mulitoply by -1)
 		if (moveDown) {
     			enemyDirection *= -1;
 		}
 
 	        // RENDER
+		// this is done to erase all the previous positions and not leave a trail
         	clearScreen(0x000000); // I want to see with black instead of red
+		// draw the player at it's current position
         	drawRect(player.x, player.y, player.width, player.height, 0xffffff);
 
 		// Draw enemies
+		// loop through all the enenmies in the grid and draw the ones that are alive
 		for (int row = 0; row < ENEMY_ROWS; row++) {
     			for (int col = 0; col < ENEMY_COLS; col++) {
-
         			if (enemies[row][col].alive) {
             				drawRect(
-                				enemies[row][col].x,
-                				enemies[row][col].y,
-                				enemies[row][col].width,
-                				enemies[row][col].height,
-                				0x00ff00
+                				enemies[row][col].x, // horizontal position
+                				enemies[row][col].y, // veritcal position
+                				enemies[row][col].width, // how wide the enemy is
+                				enemies[row][col].height, // how tall the enemy is
+                				0x00ff00 // green color
             				);
         			}
     			}
 		}
 
 		// DRAW BULLETS
+		// loop through all the bullet slots and draw the ones that are in flight
 		for (int i = 0; i < MAX_BULLETS; i++) {
-
     			if (bullets[i].active) {
         			drawRect(
-            				bullets[i].x,
-            				bullets[i].y,
-            				bullets[i].width,
-            				bullets[i].height,
+            				bullets[i].x, // horizontal position
+            				bullets[i].y, // vertical position
+            				bullets[i].width, // how wide the bullet is
+            				bullets[i].height, // how tall the bullet is 
             				0xffffff // white bullet
         			);
     			}
 		}
+		// decrease the shoot cooldown by 1 each frame 
+		// once it reaches 0, then the player can fire again
 		if (shootCoolDown > 0) {
                 	shootCoolDown--;
         	}
 		// DELAY
+		// wait before starting the next frame
+		// controls the game speed
                 delay();
     	}
 }
